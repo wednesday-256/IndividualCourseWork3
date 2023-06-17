@@ -30,6 +30,15 @@
       :cart="cart"
     ></lessons-component>
 
+    <checkout-component
+      v-else
+      @removeFromCart="removeFromCart"
+      @submitOrder="submitOrder"
+      :cart="cart"
+      :checkMsg="checkMsg"
+    >
+    </checkout-component>
+
     <!-- alerts box  -->
     <div class="position-fixed bottom-0 start-0 p-3" style="z-index: 11">
       <div
@@ -74,15 +83,20 @@
 
 <script>
 import lessonsComponent from "./components/LessonsComponent.vue";
+import checkoutComponent from "./components/CheckoutComponent.vue";
+
 let lesson_url = "http://localhost:3000/collection/lessons";
+let order_url = "http://localhost:3000/collection/orders";
+
 export default {
   name: "App",
-  components: { lessonsComponent },
+  components: { lessonsComponent, checkoutComponent },
   data() {
     return {
       sitename: "After School Activities",
       lessons: [],
       cart: {},
+      checkMsg: "Checkout",
       notifyMsg: {
         header: "",
         type: "",
@@ -110,6 +124,75 @@ export default {
 
       //notify the user of the add to cart operation
       this.handleNotify(lesson, 1);
+    },
+    removeFromCart(c_lesson) {
+      this.lessons.forEach((lesson) => {
+        if (lesson.id == c_lesson.id) {
+          lesson.availableSpace = 5;
+          delete this.cart[lesson.id];
+          this.handleNotify(lesson, 2);
+        }
+      });
+    },
+    submitOrder(orderData) {
+      let order = {
+        ...orderData,
+      };
+      let update_array = {};
+      let orderObj = {};
+
+      const get_obj_id = (p_id) => {
+        let product = this.lessons.find((obj) => obj.id == p_id);
+        orderObj[product._id] = this.cart[p_id];
+        //add the object to be updated with the id and space
+        update_array[product._id] = product.availableSpace - this.cart[p_id];
+      };
+
+      Object.keys(this.cart).forEach(get_obj_id);
+
+      //adds ordered products id and spaces to order object
+      order["order"] = orderObj;
+
+      //post request to add order to the order collection
+      const options = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(order),
+      };
+
+      const update_num_space = (p_id) => {
+        update_url = lesson_url + "/" + p_id;
+        let update = {
+          availableSpace: update_array[p_id],
+        };
+        const options = {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(update),
+        };
+        fetch(update_url, options)
+          .then((resp) => resp.json())
+          .then((json) => {
+            if (!json.msg === "success") {
+              console.log("An Error occured!, " + p_id);
+            }
+          });
+      };
+
+      fetch(order_url, options)
+        .then((response) => response.json())
+        .then((json) => {
+          if (json.msg === "success") {
+            this.checkMsg = "Order Submitted!!";
+            this.handleNotify({}, 3);
+            Object.keys(update_array).forEach(update_num_space);
+            setTimeout(() => (this.cart = {}), 1500); //clears the cart ;
+          } else {
+            this.checkMsg = "An Error occured!";
+          }
+        });
     },
     handleNotify(lesson, type) {
       let classAttr = "rounded me-2 bi bi-bell-fill text-";
