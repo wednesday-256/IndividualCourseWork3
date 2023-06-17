@@ -23,14 +23,59 @@
       </div>
     </div>
 
-    
+    <lessons-component
+      v-if="showLesson"
+      @handle_lessons="handle_lessons"
+    ></lessons-component>
+
+    <!-- alerts box  -->
+    <div class="position-fixed bottom-0 start-0 p-3" style="z-index: 11">
+      <div
+        id="liveToast"
+        class="toast hide"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+        ref="toast"
+      >
+        <div class="toast-header">
+          <i :class="notifyMsg.classAttr"></i>
+          <strong class="me-auto">{{ notifyMsg.header }}</strong>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="toast"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="toast-body">
+          <p><strong>Subject: </strong>{{ notifyMsg.subject }}</p>
+          <p><strong>Location: </strong>{{ notifyMsg.location }}</p>
+          <p><strong>Price: </strong>{{ notifyMsg.price | formatPrice }}</p>
+          <p><strong>Spaces: </strong>{{ notifyMsg.space }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- cirlces box  -->
+    <div class="position-relative">
+      <div class="circle1"></div>
+      <div class="circle2"></div>
+    </div>
+
+    <div class="shapes">
+      <div class="shape1"></div>
+      <div class="shape2"></div>
+    </div>
   </div>
 </template>
 
 <script>
+import lessonsComponent from "./components/LessonsComponent.vue";
 let lesson_url = "http://localhost:3000/collection/lessons";
 export default {
   name: "App",
+  components: { lessonsComponent },
   data() {
     return {
       sitename: "After School Activities",
@@ -60,6 +105,34 @@ export default {
     cartCount() {
       return Object.keys(this.cart).length;
     },
+    handle_lessons(searchTerm) {
+      if (searchTerm) {
+        let search_url = lesson_url + "/" + searchTerm;
+
+        fetch(search_url)
+          .then((resp) => resp.json())
+          .then((json) => {
+            // console.log("results from server ", json);
+            this.lessons = json;
+          })
+          .catch((e) => {
+            console.error(e);
+          });
+      } else {
+        fetch(lesson_url)
+          .then((response) => response.json())
+          .then((json) => {
+            this.lessons = json;
+          });
+      }
+    },
+  },
+  created: () => {
+    fetch(lesson_url)
+      .then((response) => response.json())
+      .then((json) => {
+        App.lessons = json;
+      });
   },
 };
 </script>
