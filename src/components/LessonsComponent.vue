@@ -131,16 +131,55 @@
 <script>
 export default {
   name: "LessonsComponent",
-  props: ["lessons"],
+  props: ["lessons", "cart"],
   data() {
     return {
       searchTerm: "",
-      sortAttr: "",
+      sortAttr: "subject",
+      order: "ascending",
+      sorted_lessons: [],
     };
   },
   methods: {
     handle_lessons() {
       this.$emit("handle_lessons", this.searchTerm);
+    },
+    canAddToCart(lesson) {
+      if (lesson.availableSpace === 0) return false;
+      if (this.cart[lesson.id] === undefined) {
+        return true;
+      }
+      return lesson.availableSpace > 0;
+    },
+    addToCart(lesson) {
+      this.$emit("addToCart", lesson);
+    },
+  },
+  computed: {
+    sortedLessons() {
+      this.sorted_lessons = this.lessons.slice(0);
+      const check = (a) => {
+        if (typeof a === String) {
+          return a.toLowerCase();
+        } else {
+          return a;
+        }
+      };
+
+      // sort function
+      const compare = (a, b) => {
+        if (check(a[this.sortAttr]) < check(b[this.sortAttr])) {
+          return -1;
+        }
+        if (check(a[this.sortAttr]) < check(b[this.sortAttr])) {
+          return 0;
+        }
+      };
+
+      if (this.order === "descending") {
+        return this.sorted_lessons.sort(compare).reverse();
+      }
+      return this.sorted_lessons.sort(compare);
     },
   },
 };

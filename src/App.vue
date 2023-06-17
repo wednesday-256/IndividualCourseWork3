@@ -26,6 +26,8 @@
     <lessons-component
       v-if="showLesson"
       @handle_lessons="handle_lessons"
+      :lessons="lessons"
+      :cart="cart"
     ></lessons-component>
 
     <!-- alerts box  -->
@@ -94,6 +96,60 @@ export default {
     };
   },
   methods: {
+    addToCart(lesson) {
+      // add lesson to cart
+      if (Object.keys(this.cart).includes(String(lesson.id))) {
+        // console.log("updating", this.cart);
+        this.cart[lesson.id]++;
+      } else {
+        this.cart[lesson.id] = 1;
+      }
+
+      //remove space from lesson
+      lesson.availableSpace--;
+
+      //notify the user of the add to cart operation
+      this.handleNotify(lesson, 1);
+    },
+    handleNotify(lesson, type) {
+      let classAttr = "rounded me-2 bi bi-bell-fill text-";
+
+      //changes the bell color depending on the type of notification
+      switch (type) {
+        case 1:
+          classAttr += "success";
+          this.notifyMsg.header = "Added To Cart!";
+          this.notifyMsg.type = 1;
+          break;
+        case 2:
+          classAttr += "danger";
+          this.notifyMsg.header = "Removed From Cart!";
+          this.notifyMsg.type = 2;
+          break;
+        case 3:
+          classAttr += "success";
+          this.notifyMsg.header = "Order Submitted!";
+          this.notifyMsg.type = 1;
+          break;
+      }
+      this.notifyMsg.classAttr = classAttr;
+      if (type === 3) {
+        this.notifyMsg.subject = "Total Order";
+        this.notifyMsg.location = "Total Order";
+        this.notifyMsg.price = 0;
+        this.notifyMsg.space = "Total Order";
+      } else {
+        this.notifyMsg.subject = lesson.subject;
+        this.notifyMsg.location = lesson.location;
+        this.notifyMsg.price = lesson.price;
+        this.notifyMsg.space = this.cart[lesson.id] || lesson.availableSpace;
+      }
+
+      //create and show the notification
+      let toast = bootstrap.Toast.getOrCreateInstance(this.$refs.toast);
+      toast._config.delay = 3000;
+      toast.show();
+    },
     switchPage() {
       fetch(lesson_url)
         .then((response) => response.json())
