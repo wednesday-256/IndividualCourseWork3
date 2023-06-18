@@ -25,6 +25,7 @@
 
     <lessons-component
       v-if="showLesson"
+      @addToCart="addToCart"
       @handle_lessons="handle_lessons"
       :lessons="lessons"
       :cart="cart"
@@ -36,6 +37,7 @@
       @submitOrder="submitOrder"
       :cart="cart"
       :checkMsg="checkMsg"
+      :lessons="lessons"
     >
     </checkout-component>
 
@@ -62,7 +64,7 @@
         <div class="toast-body">
           <p><strong>Subject: </strong>{{ notifyMsg.subject }}</p>
           <p><strong>Location: </strong>{{ notifyMsg.location }}</p>
-          <p><strong>Price: </strong>{{ notifyMsg.price | formatPrice }}</p>
+          <p><strong>Price: </strong>AED{{ notifyMsg.price }}.00</p>
           <p><strong>Spaces: </strong>{{ notifyMsg.space }}</p>
         </div>
       </div>
@@ -84,6 +86,8 @@
 <script>
 import lessonsComponent from "./components/LessonsComponent.vue";
 import checkoutComponent from "./components/CheckoutComponent.vue";
+
+import { Toast } from "bootstrap";
 
 let lesson_url = "http://localhost:3000/collection/lessons";
 let order_url = "http://localhost:3000/collection/orders";
@@ -163,7 +167,7 @@ export default {
       };
 
       const update_num_space = (p_id) => {
-        update_url = lesson_url + "/" + p_id;
+        let update_url = lesson_url + "/" + p_id;
         let update = {
           availableSpace: update_array[p_id],
         };
@@ -229,7 +233,7 @@ export default {
       }
 
       //create and show the notification
-      let toast = bootstrap.Toast.getOrCreateInstance(this.$refs.toast);
+      let toast = Toast.getOrCreateInstance(this.$refs.toast);
       toast._config.delay = 3000;
       toast.show();
     },
@@ -266,11 +270,12 @@ export default {
       }
     },
   },
-  created: () => {
+  created() {
     fetch(lesson_url)
       .then((response) => response.json())
       .then((json) => {
-        App.lessons = json;
+        // console.log("json", json);
+        this.lessons = json;
       });
   },
 };
