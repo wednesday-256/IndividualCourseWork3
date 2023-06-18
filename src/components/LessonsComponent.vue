@@ -144,13 +144,13 @@
 <script>
 export default {
   name: "LessonsComponent",
-  props: ["lessons", "cart"],
+  props: ["lessons", "cart"], //registers expected props from the parent component
   data() {
     return {
       searchTerm: "",
       sortAttr: "subject",
       order: "ascending",
-      server_url: "http://localhost:3000/",
+      server_url: "http://localhost:3000/", // saves server url for retrieving images
     };
   },
   methods: {
@@ -165,11 +165,13 @@ export default {
       return lesson.availableSpace > 0;
     },
     addToCart(lesson) {
+      //emits an event to the event to add a lesson to the cart
       this.$emit("addToCart", lesson);
     },
   },
   computed: {
     sortedLessons() {
+      //computed property to implement sort functionality
       let sorted_lessons = this.lessons.slice(0);
 
       const check = (a) => {
