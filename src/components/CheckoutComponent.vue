@@ -38,7 +38,7 @@
           <button
             type="button"
             class="btn-success btn btn-sm bg-gradient"
-            v-if="isValid"
+            v-if="isValid()"
             @click="submitOrder"
           >
             <i class="bi me-1 bi-check-circle-fill"></i> {{ checkMsg }}
@@ -82,7 +82,7 @@
           <div class="ms-1 h-90">
             <p><strong>Subject: </strong>{{ lesson.subject }}</p>
             <p><strong>Location: </strong>{{ lesson.location }}</p>
-            <p><strong>Price: </strong>AED{{ lesson.price }}.00</p>
+            <p><strong>Price: </strong>AED {{ lesson.price }}.00</p>
             <p><strong>Spaces: </strong>{{ lesson.space }}</p>
 
             <button
@@ -114,6 +114,7 @@ export default {
   },
   computed: {
     getCartLessons() {
+      this.cartArray = [];
       //updates the cart array with information about the activity
       const updateArray = (id) => {
         let lessonObj = { id: id },
@@ -137,8 +138,8 @@ export default {
     removeFromCart(lesson) {
       this.cartArray.forEach((c_lesson, ix) => {
         if (c_lesson.id === lesson.id) {
-          console.log(this.cartArray[ix]);
-          delete this.cartArray[ix];
+          // console.log(this.cartArray[ix]);
+          this.cartArray.splice(ix, 1);
         }
       });
       this.$emit("removeFromCart", lesson);
@@ -151,6 +152,8 @@ export default {
         this.orderData.phoneNumber.search(/[a-z]/gi) > -1 ||
         this.orderData.name.search(/[0-9]/g) > -1
       ) {
+        return false;
+      } else if (this.cartArray.length < 1) {
         return false;
       } else {
         return true;
