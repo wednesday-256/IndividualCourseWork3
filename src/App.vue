@@ -84,17 +84,21 @@
 </template>
 
 <script>
+//import child components 
 import lessonsComponent from "./components/LessonsComponent.vue";
 import checkoutComponent from "./components/CheckoutComponent.vue";
 
+//import toast from bootstrap for customizations
 import { Toast } from "bootstrap";
 
+
+//server urls for lessons and orders
 let lesson_url = "http://localhost:3000/collection/lessons";
 let order_url = "http://localhost:3000/collection/orders";
 
 export default {
   name: "App",
-  components: { lessonsComponent, checkoutComponent },
+  components: { lessonsComponent, checkoutComponent }, //registers lesson and component as child components
   data() {
     return {
       sitename: "After School Activities",
