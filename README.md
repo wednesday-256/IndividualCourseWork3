@@ -1,4 +1,11 @@
-# test
+# IndividualCourseWork3
+A project that converts the Activities vue app into an SPA using sfc components
+
+### Github Link 
+https://github.com/wednesday-256/IndividualCourseWork3
+
+### Github Pages
+https://wednesday-256.github.io/IndividualCourseWork3/
 
 ## Project setup
 ```

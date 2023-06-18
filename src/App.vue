@@ -84,13 +84,12 @@
 </template>
 
 <script>
-//import child components 
+//import child components
 import lessonsComponent from "./components/LessonsComponent.vue";
 import checkoutComponent from "./components/CheckoutComponent.vue";
 
 //import toast from bootstrap for customizations
 import { Toast } from "bootstrap";
-
 
 //server urls for lessons and orders
 let lesson_url = "http://localhost:3000/collection/lessons";
@@ -280,6 +279,9 @@ export default {
       .then((json) => {
         // console.log("json", json);
         this.lessons = json;
+      })
+      .catch((e) => {
+        console.log("issue with created function: check server is running", e);
       });
   },
 };

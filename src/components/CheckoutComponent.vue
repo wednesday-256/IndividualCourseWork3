@@ -104,7 +104,7 @@ export default {
   props: ["cart", "checkMsg", "lessons"], //registers expected props from the parent component
   data() {
     return {
-      server_url: "http://localhost:3000/", //stores server url 
+      server_url: "http://localhost:3000/", //stores server url
       cartArray: [],
       orderData: {
         name: "",
@@ -114,7 +114,8 @@ export default {
   },
   computed: {
     getCartLessons() {
-      this.cartArray = [];
+      const init = () => (this.cartArray = []);
+      init();
       //updates the cart array with information about the activity
       const updateArray = (id) => {
         let lessonObj = { id: id },
@@ -136,15 +137,15 @@ export default {
   },
   methods: {
     removeFromCart(lesson) {
-       // updates the cart array within the component
+      // updates the cart array within the component
       this.cartArray.forEach((c_lesson, ix) => {
         if (c_lesson.id === lesson.id) {
           // console.log(this.cartArray[ix]);
           this.cartArray.splice(ix, 1);
         }
       });
-      //emits an event to the parent component to update the cart 
-      this.$emit("removeFromCart", lesson); 
+      //emits an event to the parent component to update the cart
+      this.$emit("removeFromCart", lesson);
     },
     isValid() {
       //checks if the  phone and name fields are valid
