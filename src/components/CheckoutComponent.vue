@@ -101,10 +101,10 @@
 <script>
 export default {
   name: "CheckoutComponent",
-  props: ["cart", "checkMsg", "lessons"],
+  props: ["cart", "checkMsg", "lessons"], //registers expected props from the parent component
   data() {
     return {
-      server_url: "http://localhost:3000/",
+      server_url: "http://localhost:3000/", //stores server url 
       cartArray: [],
       orderData: {
         name: "",
@@ -136,15 +136,18 @@ export default {
   },
   methods: {
     removeFromCart(lesson) {
+       // updates the cart array within the component
       this.cartArray.forEach((c_lesson, ix) => {
         if (c_lesson.id === lesson.id) {
           // console.log(this.cartArray[ix]);
           this.cartArray.splice(ix, 1);
         }
       });
-      this.$emit("removeFromCart", lesson);
+      //emits an event to the parent component to update the cart 
+      this.$emit("removeFromCart", lesson); 
     },
     isValid() {
+      //checks if the  phone and name fields are valid
       if (this.orderData.phoneNumber === "" || this.orderData.name === "") {
         return false;
       }
@@ -160,6 +163,7 @@ export default {
       }
     },
     submitOrder() {
+      //emits event to the root component to submit order
       this.$emit("submitOrder", this.orderData);
     },
   },
